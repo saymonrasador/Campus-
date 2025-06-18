@@ -17,6 +17,7 @@ export default function LoginPage() {
     const data = await res.json()
 
     if (res.ok) {
+      window.dispatchEvent(new Event('user-logged-in'))
       router.push('/dashboard')
     } else {
       setMessage(data.message)

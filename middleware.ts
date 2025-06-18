@@ -1,20 +1,30 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Middleware de proteção
-export function middleware(request: NextRequest) {
-  const userId = request.cookies.get('user_id')?.value
-
-  const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard')
-
-  if (isProtectedRoute && !userId) {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
-
-  return NextResponse.next()
+export const config = {
+  matcher: '/((?!api|_next/static|_next/image|favicon.ico).*)',
 }
 
-// Define quais rotas o middleware vai proteger
-export const config = {
-  matcher: ['/dashboard/:path*'],
+const publicRoutes = ['/', '/login', '/register']
+
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // rotas públicas
+  if (publicRoutes.includes(pathname)) {
+    return NextResponse.next()
+  }
+
+  // tenta ler cookie user_id
+  const userId = request.cookies.get('user_id')?.value
+
+  // se não tiver cookie, manda para login
+  if (!userId) {
+    const loginUrl = request.nextUrl.clone()
+    loginUrl.pathname = '/login'
+    return NextResponse.redirect(loginUrl)
+  }
+
+  // ok, está logado
+  return NextResponse.next()
 }

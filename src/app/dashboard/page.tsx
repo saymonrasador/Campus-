@@ -1,53 +1,55 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function DashboardPage() {
-  const [role, setRole] = useState('')
+  const [role, setRole] = useState<string | null>(null)
+  const router = useRouter()
 
   useEffect(() => {
     const cookie = document.cookie
       .split('; ')
       .find(row => row.startsWith('user_role='))
-    const userRole = cookie?.split('=')[1]
-    setRole(userRole || '')
-  }, [])
+    const userRole = cookie?.split('=')[1] || null
 
-  const commonButtons = (
-    <>
-      <Button label="Curso" />
-      <Button label="Eventos Acadêmicos" />
-      <Button label="Chat de Mensagem" />
-    </>
-  )
+    if (!userRole) {
+      router.push('/login')
+      return
+    }
 
-  const alunoButtons = (
-    <>
-      <Button label="Matrícula" />
-      <Button label="Histórico Escolar" />
-      <Button label="Documentos" />
-      <Button label="Calendário Acadêmico" />
-    </>
-  )
+    setRole(userRole)
+  }, [router])
 
-  const extraButtons = <Button label="Disciplinas" />
+  const logout = async () => {
+  await fetch('/api/logout', { method: 'POST' })
 
-  return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-6 space-y-4">
-      <h1 className="text-3xl font-bold text-blue-800 mb-6">Área Protegida - {role}</h1>
+  // Limpar cookies manualmente
+  document.cookie = 'user_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+  document.cookie = 'user_name=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+  document.cookie = 'user_role=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md">
-        {commonButtons}
-        {role === 'ALUNO' && alunoButtons}
-        {['PROFESSOR', 'COORDENADOR', 'SECRETARIA'].includes(role) && extraButtons}
-      </div>
-    </main>
-  )
+  // Disparar evento global de logout
+  window.dispatchEvent(new Event('user-logged-out'))
+
+  // Redirecionar
+  router.push('/login')
+  router.refresh()
 }
 
-function Button({ label }: { label: string }) {
+
+  // enquanto o role não for carregado, não renderiza
+  if (role === null) return null
+
   return (
-    <button className="bg-blue-700 hover:bg-blue-800 text-white w-full py-3 rounded-md shadow transition text-center">
-      {label}
-    </button>
+    <main className="flex flex-col items-center justify-center min-h-screen p-6 space-y-6">
+      <h1 className="text-3xl font-bold text-blue-800">Área Protegida - {role}</h1>
+
+      <button
+        onClick={logout}
+        className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md shadow transition"
+      >
+        Sair
+      </button>
+    </main>
   )
 }

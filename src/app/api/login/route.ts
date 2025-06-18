@@ -21,10 +21,16 @@ export async function POST(req: Request) {
   const response = NextResponse.json({ message: 'Login realizado com sucesso!' })
 
   // Salva o ID do usuário em cookie
+  response.cookies.set('user_id', user.id.toString(), {
+    httpOnly: false,
+    path: '/',
+  });
+  response.cookies.set('user_name', user.name, {
+    path: '/',
+  });
   response.cookies.set('user_role', user.role, {
-  httpOnly: true,
-  path: '/',
-})
+    path: '/',
+  });
 
-  return response
+  return response;
 }
