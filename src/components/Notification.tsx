@@ -1,16 +1,19 @@
+// Componente de notificação que exibe uma mensagem por 4 segundos e permite fechar manualmente
 'use client'
+
 import { useEffect } from 'react'
 
+// Definição das propriedades do componente de notificação
 type Props = {
-  message: string
-  onClose: () => void
+  message: string 
+  onClose: () => void 
 }
 
 export default function Notification({ message, onClose }: Props) {
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const timer = setTimeout(() => { 
       onClose()
-    }, 5000)
+    }, 4000)
 
     return () => clearTimeout(timer)
   }, [onClose])

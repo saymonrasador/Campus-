@@ -1,4 +1,6 @@
+// Página de registro de usuário
 'use client'
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Notification from '@/components/Notification'
@@ -9,6 +11,7 @@ export default function RegisterPage() {
   const [message, setMessage] = useState('')
   const [showNotification, setShowNotification] = useState(false)
 
+  // Função para lidar com o envio do formulário de registro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 

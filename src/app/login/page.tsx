@@ -1,12 +1,14 @@
+// Página de login do usuário
 'use client'
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [form, setForm] = useState({ email: '', password: '' })
-  const [message, setMessage] = useState('')
+  const [form, setForm] = useState({ email: '', password: '' }) // Estado para armazenar os dados do formulário
+  const [message, setMessage] = useState('') // Mensagem de feedback ao usuário
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -18,7 +20,7 @@ export default function LoginPage() {
 
     if (res.ok) {
       window.dispatchEvent(new Event('user-logged-in'))
-      router.push('/dashboard')
+      router.push('/')
     } else {
       setMessage(data.message)
     }
